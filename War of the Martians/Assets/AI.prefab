@@ -110,8 +110,8 @@ Transform:
   m_GameObject: {fileID: 1998876169695892840}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.039, y: 0.049, z: 0}
-  m_LocalScale: {x: 0.43, y: 0.61, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7395171983506239653}
@@ -221,11 +221,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b10133e5af2749468f5289543e671e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 150
+  speed: 200
   nextWaypointDistance: 0.5
   updatePathInterval: 1
   isSelected: 0
   targetPosition: {x: 0, y: 0, z: 0}
+  isCommandedToMove: 0
+  health: 100
 --- !u!114 &213180687243365399
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,6 +342,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e353c81c8510ae84390c8faa95a16446, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackDamage: 10
+  attackSpeed: 2
+  attackRange: 2
   targetToAttack: {fileID: 0}
 --- !u!95 &1299141138294510500
 Animator:

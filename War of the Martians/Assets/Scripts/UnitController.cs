@@ -12,6 +12,9 @@ public class UnitController : MonoBehaviour
     public Vector3 targetPosition;
     public bool isCommandedToMove;
 
+    public float health = 100f;
+    // Attack information is stored in AttackController
+
     private Rigidbody2D rb;
     private Camera cam;
     private Seeker seeker;
@@ -29,13 +32,26 @@ public class UnitController : MonoBehaviour
         //UpdatePath();
     }
 
+    // Unit is damaged
+    public void Damage(float damage) {
+        health -= damage;
+        //Debug.Log("Took " + damage + " damage!");
+        if (health <= 0) {
+            // Death
+            Debug.Log(gameObject.name + " has died");
+            Destroy(gameObject);
+        }
+    }
+
+    // Unit starts path
     public void UpdatePath() {
-        Debug.Log("Called");
+        //Debug.Log("Called");
         //Debug.Log(seeker.IsDone());
         if (seeker.IsDone())
             seeker.StartPath(rb.position, targetPosition, OnPathComplete);
     }
 
+    // Problem: State was spamming, causing no movement. Solution: cooldown on path calculation
     public void SpecialTargetFunction() {
         if (lockout == false) {
             lockout = true;

@@ -2,16 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This script issue commands to units
 public class UnitSelectionManager : MonoBehaviour
 {
+    // Singleton
     public static UnitSelectionManager UnitSelector;
+
+    [Header("Lists")]
     [SerializeField] public List<GameObject> allUnits = new List<GameObject>();
     [SerializeField] public List<GameObject> selectedUnits = new List<GameObject>();
-    
+
+    [Header("Layers")]
     [SerializeField] public LayerMask unitLayer;
     [SerializeField] public LayerMask attackableLayer;
+    [SerializeField] public LayerMask resourceLayer;
 
-    public bool attackCursorVisible = false;
+    public enum cursorTypes {Default, Attack, Collect};
+    public cursorTypes cursor; // TODO: Give functionality
 
     private void Awake() {
         if (UnitSelector != null && UnitSelector != this) {
@@ -43,11 +50,12 @@ public class UnitSelectionManager : MonoBehaviour
             Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mouseInWorld.z = 0;
             RaycastHit2D raycastHit2D = Physics2D.Raycast(mouseInWorld,(mouseInWorld-Camera.main.transform.position).normalized,100,attackableLayer);
-            if (raycastHit2D) {
-                Debug.Log("Enemy Hovered on");
-                attackCursorVisible = true;
+            if (raycastHit2D) { // Purpose: cursor image
+                //Debug.Log("Enemy Hovered on");
+                cursor = cursorTypes.Attack;
                 if (Input.GetMouseButtonDown(1)) {
                     Debug.Log("Enemy Clicked on");
+                    // TODO: Give indication on enemy clicked
                     Transform target = raycastHit2D.transform;
                     foreach (GameObject unit in selectedUnits) {
                         if (unit.GetComponent<AttackController>()) {
@@ -56,11 +64,40 @@ public class UnitSelectionManager : MonoBehaviour
                     }
                 }
             } else {
-                attackCursorVisible = false;
+                cursor = cursorTypes.Default;
+            }
+
+        // Collect Material
+        } else if (selectedUnits.Count > 0 && WorkerUnitPresent(selectedUnits)) {
+            Vector3 mouseInWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseInWorld.z = 0;
+            // Hey stupid! Make sure the game object has a collider!
+            RaycastHit2D raycastHit2D = Physics2D.Raycast(mouseInWorld,(mouseInWorld-Camera.main.transform.position).normalized,100,resourceLayer);
+            if (raycastHit2D) { // Purpose: cursor image
+                cursor = cursorTypes.Collect;
+                if (Input.GetMouseButtonDown(1)) {
+                    // can only current give the workers the collect command
+                    foreach (GameObject unit in selectedUnits) {
+                        if (unit.GetComponent<WorkerUnitController>()) {
+                            unit.GetComponent<WorkerUnitController>().Collect(raycastHit2D.transform); // Worker will proceeds to take over
+                        }
+                    }
+                }
+            } else {
+                cursor = cursorTypes.Default;
             }
         }
     }
+    // Checks to see if a worker unit is present
+    private bool WorkerUnitPresent(List<GameObject> units) {
+        foreach (GameObject unit in selectedUnits) {
+            if (unit.GetComponent<WorkerUnitController>())
+                return true;
+        }
+        return false;
+    }
 
+    // Checks to see if an attack unit is present
     private bool OffensiveUnitPresent(List<GameObject> units) {
         foreach (GameObject unit in selectedUnits) {
             if (unit.GetComponent<AttackController>())

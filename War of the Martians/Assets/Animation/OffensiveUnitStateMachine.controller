@@ -59,7 +59,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UnitAnimator
+  m_Name: OffensiveUnitStateMachine
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: isIdle
@@ -155,7 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 635437d28d5842b46a1792b9e714a36a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackingDistance: 1
 --- !u!1107 &2202466570005741924
 AnimatorStateMachine:
   serializedVersion: 6
@@ -196,6 +195,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f86c79afd796ac478916e091c11ac75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5247073676716477909
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34c08675d42d3dd498e7f3a963e0a256, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1102 &6300641931284022987
 AnimatorState:
   serializedVersion: 6
@@ -208,7 +219,8 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8670682089080140675}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 5247073676716477909}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
