@@ -13,7 +13,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Enemy") && targetToAttack == null) {
-            Debug.Log("Detected: " + other.transform.name);
+            //Debug.Log("Detected: " + other.transform.name);
             targetToAttack = other.transform;
         }
     }
@@ -28,7 +28,7 @@ public class AttackController : MonoBehaviour
 
         IEnumerator att() {
             // do damage
-            Debug.Log("Attacking");
+            //Debug.Log("Attacking");
             //Debug.Log(targetToAttack.gameObject);
             targetToAttack.gameObject.GetComponent<UnitController>().Damage(attackDamage);
 

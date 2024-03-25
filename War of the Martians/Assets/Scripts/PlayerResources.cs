@@ -24,10 +24,12 @@ public class PlayerResources : MonoBehaviour
 
     // Getters and Setters
     public void AddResource(int points, ResourceType resource) {
-        if (resource == ResourceTypes.Material) {
+        if (resource == ResourceType.Material) {
             materialPoints += points;
-        } else if (resource == ResourceTypes.Oxygen) {
+            //Debug.Log("Current Material: " + materialPoints);
+        } else if (resource == ResourceType.Oxygen) {
             oxygenPoints += points;
+            //Debug.Log("Current Oxygen: " + oxygenPoints);
         }
     }
     public int GetMaterialPoints() {
@@ -35,5 +37,12 @@ public class PlayerResources : MonoBehaviour
     }
     public int GetOxygenPoints() {
         return oxygenPoints;
+    }
+    public void SubtractPoints(ResourceType t, int p) {
+        if (t == ResourceType.Material) {
+            materialPoints -= p;
+        } else if (t == ResourceType.Oxygen) {
+            oxygenPoints -= p;
+        }
     }
 }

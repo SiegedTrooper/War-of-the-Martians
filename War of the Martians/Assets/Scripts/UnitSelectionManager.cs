@@ -58,6 +58,7 @@ public class UnitSelectionManager : MonoBehaviour
                     // TODO: Give indication on enemy clicked
                     Transform target = raycastHit2D.transform;
                     foreach (GameObject unit in selectedUnits) {
+                        if (!unit) continue;
                         if (unit.GetComponent<AttackController>()) {
                             unit.GetComponent<AttackController>().targetToAttack = target;
                         }
@@ -78,6 +79,7 @@ public class UnitSelectionManager : MonoBehaviour
                 if (Input.GetMouseButtonDown(1)) {
                     // can only current give the workers the collect command
                     foreach (GameObject unit in selectedUnits) {
+                        if (!unit) continue;
                         if (unit.GetComponent<WorkerUnitController>()) {
                             unit.GetComponent<WorkerUnitController>().Collect(raycastHit2D.transform); // Worker will proceeds to take over
                         }
@@ -91,6 +93,8 @@ public class UnitSelectionManager : MonoBehaviour
     // Checks to see if a worker unit is present
     private bool WorkerUnitPresent(List<GameObject> units) {
         foreach (GameObject unit in selectedUnits) {
+            if (!unit)
+                return false;
             if (unit.GetComponent<WorkerUnitController>())
                 return true;
         }
@@ -100,6 +104,8 @@ public class UnitSelectionManager : MonoBehaviour
     // Checks to see if an attack unit is present
     private bool OffensiveUnitPresent(List<GameObject> units) {
         foreach (GameObject unit in selectedUnits) {
+            if (!unit) 
+                return false;
             if (unit.GetComponent<AttackController>())
                 return true;
         }
