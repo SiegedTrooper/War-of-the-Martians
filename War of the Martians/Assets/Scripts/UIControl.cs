@@ -9,6 +9,7 @@ public class UIControl : MonoBehaviour
 {
     [SerializeField] private GameObject workerPrefab;
     [SerializeField] private GameObject humanPrefab;
+    [SerializeField] private GameObject objective;
     //[SerializeField] private GameObject robotPrefab;
     [SerializeField] private GameObject AIsFolder;
 
@@ -23,29 +24,49 @@ public class UIControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        string l1 = "Spawning units cost resource points.\n";
-        string l2 = "Material: " + PlayerResources.instance.GetMaterialPoints() + "pts\n";
-        string l3 = "Oxygen: " + PlayerResources.instance.GetOxygenPoints() + "pts\n\n";
-        string l4 = "Push the respective keys to spawn units\n";
-        string l5 = "Worker - 5 Mats - Q\n";
-        string l6 = "Human - 10 Mats - R\n";
-        //string l7 = "Robot - 10 Mats - T";
-        string combined = l1+l2+l3+l4+l5+l6;//+l7;
-        gameObject.GetComponent<TextMeshProUGUI>().text = desc + combined;
+        if (UnitSelectionManager.UnitSelector.allUnits.Count == 0 || !objective) {
+            if (!objective) {
+                TextMeshProUGUI t = gameObject.GetComponent<TextMeshProUGUI>();
+                t.text = "You Win";
+                t.color = Color.red;
+                t.fontSize = 106;
+                t.GetComponent<RectTransform>().anchorMin = new Vector2(.5f,.5f);
+                t.GetComponent<RectTransform>().anchorMax = new Vector2(.5f,.5f);
+                t.GetComponent<RectTransform>().pivot = new Vector2(0,0);
+            } else {
+                TextMeshProUGUI t = gameObject.GetComponent<TextMeshProUGUI>();
+                t.text = "Game Over";
+                t.color = Color.red;
+                t.fontSize = 106;
+                t.GetComponent<RectTransform>().anchorMin = new Vector2(.5f,.5f);
+                t.GetComponent<RectTransform>().anchorMax = new Vector2(.5f,.5f);
+                t.GetComponent<RectTransform>().pivot = new Vector2(0,0);
+            }
+        } else {
+            string l1 = "Spawning units cost resource points.\n";
+            string l2 = "Material: " + PlayerResources.instance.GetMaterialPoints() + "pts\n";
+            string l3 = "Oxygen: " + PlayerResources.instance.GetOxygenPoints() + "pts\n\n";
+            string l4 = "Push the respective keys to spawn units\n";
+            string l5 = "Worker - 5 Mats - Q\n";
+            string l6 = "Human - 10 Mats - E\n";
+            //string l7 = "Robot - 10 Mats - T";
+            string combined = l1+l2+l3+l4+l5+l6;//+l7;
+            gameObject.GetComponent<TextMeshProUGUI>().text = desc + combined;
 
-        if (CheckConditions(KeyCode.Q,5,0)) {
-            PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
-            // Spawn worker
-            SpawnPrefab(workerPrefab, new Vector2(-20f,6f));
-        } else if (CheckConditions(KeyCode.R,10,0)) {
-            PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
-            // Spawn human
-            SpawnPrefab(humanPrefab, new Vector2(-15.5,5f));
-        //} else if (CheckConditions(KeyCode.T,10,0)) {
-        //    PlayerResources.instance.SubtractPoints(ResourceType.Material, 10);
-        //    // Spawn Robot
-        //    SpawnPrefab(robotPrefab, new Vector2(-11f,5.5f));
-        }   
+            if (CheckConditions(KeyCode.Q,5,0)) {
+                PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
+                // Spawn worker
+                SpawnPrefab(workerPrefab, new Vector2(-20f,6f));
+            } else if (CheckConditions(KeyCode.E,10,0)) {
+                PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
+                // Spawn human
+                SpawnPrefab(humanPrefab, new Vector2(-15.5f,5f));
+            //} else if (CheckConditions(KeyCode.T,10,0)) {
+            //    PlayerResources.instance.SubtractPoints(ResourceType.Material, 10);
+            //    // Spawn Robot
+            //    SpawnPrefab(robotPrefab, new Vector2(-11f,5.5f));
+            }   
+        }
     }
 
     private bool CheckConditions(KeyCode key, int mat, int oxy) {

@@ -93,8 +93,7 @@ public class UnitSelectionManager : MonoBehaviour
     // Checks to see if a worker unit is present
     private bool WorkerUnitPresent(List<GameObject> units) {
         foreach (GameObject unit in selectedUnits) {
-            if (!unit)
-                return false;
+            if (!unit) continue;
             if (unit.GetComponent<WorkerUnitController>())
                 return true;
         }
@@ -104,8 +103,7 @@ public class UnitSelectionManager : MonoBehaviour
     // Checks to see if an attack unit is present
     private bool OffensiveUnitPresent(List<GameObject> units) {
         foreach (GameObject unit in selectedUnits) {
-            if (!unit) 
-                return false;
+            if (!unit) continue;
             if (unit.GetComponent<AttackController>())
                 return true;
         }
@@ -136,6 +134,7 @@ public class UnitSelectionManager : MonoBehaviour
 
     public void DeselectAll() {
         foreach (var unit in selectedUnits) {
+            if (!unit) continue;
             SelectUnit(unit,false);
         }
         selectedUnits.Clear();
