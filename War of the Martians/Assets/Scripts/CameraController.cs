@@ -35,6 +35,10 @@ public class CameraController : MonoBehaviour
     public Texture2D cursorArrowDown;
     public Texture2D cursorArrowLeft;
     public Texture2D cursorArrowRight;
+
+    [Header("Limits")]
+    [SerializeField] float verticalLimit = 0f;
+    [SerializeField] float horizontalLimit = 0f;
  
     CursorArrow currentCursor = CursorArrow.DEFAULT;
     enum CursorArrow
@@ -155,6 +159,18 @@ public class CameraController : MonoBehaviour
                     isCursorSet = false;
                 }
             }
+        }
+
+        // Checking to see if newposition is outside of given range
+        if (newPosition.x > horizontalLimit) {
+            newPosition = new Vector3(horizontalLimit,newPosition.y,newPosition.z);
+        } else if (newPosition.x < -horizontalLimit) {
+            newPosition = new Vector3(-horizontalLimit,newPosition.y,newPosition.z);
+        }
+        if (newPosition.y > verticalLimit) {
+            newPosition = new Vector3(newPosition.x,verticalLimit,newPosition.z);
+        } else if (newPosition.y < -verticalLimit) {
+            newPosition = new Vector3(newPosition.x,-verticalLimit,newPosition.z);
         }
  
         transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementSensitivity);
