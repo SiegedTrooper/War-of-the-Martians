@@ -26,9 +26,11 @@ public class PlayerResources : MonoBehaviour
     public void AddResource(int points, ResourceType resource) {
         if (resource == ResourceType.Material) {
             materialPoints += points;
+            CommandUIController.instance.UpdateCount(materialPoints, resource);
             //Debug.Log("Current Material: " + materialPoints);
         } else if (resource == ResourceType.Oxygen) {
             oxygenPoints += points;
+            CommandUIController.instance.UpdateCount(oxygenPoints, resource);
             //Debug.Log("Current Oxygen: " + oxygenPoints);
         }
     }

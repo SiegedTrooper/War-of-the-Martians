@@ -27,7 +27,8 @@ public class WorkerDepositState : StateMachineBehaviour
 
             animator.SetBool("isDepositing", false);
             // Q: When should I go to Idle?
-            // A: If resource no longer exists
+            // A: If resource no longer exists // new condition to implement: and when there are no nearby resources
+            // TODO: Implement new condition
             if (workerController.GetTarget() == null) {
                 animator.SetBool("isTraveling", false);
             } else {
