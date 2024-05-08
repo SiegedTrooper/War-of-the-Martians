@@ -22,6 +22,7 @@ public class MainMenuIntroScript : MonoBehaviour
     [SerializeField] private Button missionBack;
     [SerializeField] private GameObject missionSelectGroup;
     [SerializeField] private GameObject optionSelectGroup;
+    public AudioSource click;
 
     private float titleStartingPosY;
 
@@ -68,6 +69,7 @@ public class MainMenuIntroScript : MonoBehaviour
     }
 
     public void MissionButton() {
+        click.Play();
         missionSelectGroup.SetActive(true);
         play.gameObject.SetActive(false);
         options.gameObject.SetActive(false);
@@ -75,10 +77,12 @@ public class MainMenuIntroScript : MonoBehaviour
     }
 
     public void OptionButton() {
+        click.Play();
         Debug.Log("Options Clicked");
     }
 
     public void QuitButton() {
+        click.Play();
         Debug.Log("Quitting Game...");
         // Save any game data if necessary
 
@@ -93,19 +97,23 @@ public class MainMenuIntroScript : MonoBehaviour
     }
 
     public void Mission1Button() {
+        click.Play();
         Debug.Log("Switching Scene to Mission 1 - Defense");
         SceneManager.LoadScene("Mission1");
     }
 
     public void Mission2Button() {
+        click.Play();
         Debug.Log("Not Implemented");
     }
 
     public void Mission3Button() {
+        click.Play();
         Debug.Log("Not Implemented");
     }
 
     public void MissionBackButton() {
+        click.Play();
         missionSelectGroup.SetActive(false);
         play.gameObject.SetActive(true);
         options.gameObject.SetActive(true);

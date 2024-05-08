@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameTimeEvent : MonoBehaviour {
@@ -9,6 +10,8 @@ public class GameTimeEvent : MonoBehaviour {
     [SerializeField] private float remainingTime = 600f; // 10 minutes * 60 seconds
 
     [Header("Audio Sources")]
+    public AudioSource Victory;
+    public AudioSource Soundtrack;
     public AudioSource LowMachineGun;
     public AudioSource DistantTankShots;
     public AudioSource DistantGunShots;
@@ -16,6 +19,7 @@ public class GameTimeEvent : MonoBehaviour {
     public AudioSource DistantFireworks;
 
     [Header("Others")]
+    public GameObject VictoryScreen;
     public GameObject MineFolder;
     public float chanceToPlayAmbience;
     public Transform AIFolder;
@@ -25,9 +29,11 @@ public class GameTimeEvent : MonoBehaviour {
     private AudioSource prevPlayed = null;
     void Start() { 
         prevPlayed = DistantFireworks;
-        remainingTime -= 75f;
+        //remainingTime -= 590f;
+        Soundtrack.Play();
     }
 
+    private bool event100;
     private void Update() {
         string baseWord = "Main Objective\n- Survive Hostile Attacks (";
         if (remainingTime > 0) {
@@ -39,12 +45,20 @@ public class GameTimeEvent : MonoBehaviour {
             // Update the text display
             gameObject.GetComponent<TextMeshProUGUI>().text = baseWord + string.Format("{0:00}:{1:00}", minutes, seconds) + ")";
             CheckForTimeTriggers(minutes,seconds);
-        } else {
-            // When the countdown finishes
-            gameObject.GetComponent<TextMeshProUGUI>().text = baseWord + "(00:00)";
+        } else if (!event100) {
+            event100 = true;
+            // When the countdown finishes;
+            gameObject.GetComponent<TextMeshProUGUI>().text = "Main Objective\n<color=#00FF00>- Survive Hostile Attacks (00:00)</color>";
             Debug.Log("Countdown has finished!");
+            Soundtrack.Stop();
+            Victory.Play();
+            VictoryScreen.SetActive(true);
         }
         RandomAmbience();
+    }
+
+    public void Button_MainMenu() {
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void RandomAmbience() {
@@ -125,12 +139,12 @@ public class GameTimeEvent : MonoBehaviour {
         if (mins <= 6 & secs <= 30 & !event10) { // Second Wave Prepares
             ChatNotifications.instance.Notify("<u>Adjutant</u>: They are gathering again for an attack. We will be attacked in 60 seconds!","white");
             event10 = true;
-            // Prepare second wave
+            prepareAttackWaveTwo();
         }
         if (mins <= 5 & secs <= 30 & !event11) { // Second Wave Attacks
             ChatNotifications.instance.Notify("<u>Soldier</u>: Here they come again. Brace yourselves!","red");
             event11 = true;
-            // Send second wave from the north
+            sendAttackWaveTwo();
         }
         if (mins <= 5 & secs <= 10 & !event12) { // Spawn Mines
             event12 = true;
@@ -143,22 +157,22 @@ public class GameTimeEvent : MonoBehaviour {
         if (mins <= 4 & secs <= 10 & !event14) { // Third Wave Prepares
             ChatNotifications.instance.Notify("<u>Adjutant</u>: The enemy are pooling their forces again for another attack. Will be soon.","white");
             event14 = true;
-            // building up for a big attack wave
+            prepareAttackWaveThree();
         }
         if (mins <= 3 & secs <= 40 & !event15) { // Third Wave Builds Up
             ChatNotifications.instance.Notify("<u>Adjutant</u>: They will be attacking from both sides. Please be prepared.","yellow");
             event15 = true;
-            // another buildup
+            firstBuildUp();
         }
         if (mins <= 3 & secs <= 10 & !event16) { // Third Wave Builds Up
             ChatNotifications.instance.Notify("<u>Adjutant</u>: Seems like the Rebels are about ready to push us. Attack imminent in 30 seconds!","white");
             event16 = true;
-            // another building
+            secondBuildUp();
         }
         if (mins <= 2 & secs <= 40 & !event17) { // Third Wave Attacks
             ChatNotifications.instance.Notify("<u>Soldier</u>: Watch y'all! Here they come.","red");
             event17 = true;
-            // send wave
+            sendAttackWaveThree();
         }
     }
 
@@ -188,6 +202,179 @@ public class GameTimeEvent : MonoBehaviour {
 
     private void sendAttackWaveOne() {
         foreach (GameObject enemy in waveOneEnemies) {
+            if (enemy) {
+                enemy.GetComponent<EnemyUnitController>().targetPosition = attackTowards;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+            }
+        }
+    }
+
+    private List<GameObject> waveTwoEnemies = new List<GameObject>();
+    private void prepareAttackWaveTwo() {
+        Vector3 pos = new Vector3(-3f,30f,0f);
+
+        GameObject enemy1 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy2 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy3 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy4 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy5 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy6 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy7 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        waveTwoEnemies.Add(enemy1);
+        waveTwoEnemies.Add(enemy2);
+        waveTwoEnemies.Add(enemy3);
+        waveTwoEnemies.Add(enemy4);
+        waveTwoEnemies.Add(enemy5);
+        waveTwoEnemies.Add(enemy6);
+        waveTwoEnemies.Add(enemy7);
+
+        Vector3 moveToPos = new Vector3(-18f, 5f, 0f);
+
+        foreach (GameObject enemy in waveTwoEnemies) {
+            if (enemy) {
+                enemy.transform.parent = AIFolder;
+                enemy.GetComponent<EnemyUnitController>().targetPosition = moveToPos;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+            }
+        }
+    }
+
+    private void sendAttackWaveTwo() {
+        foreach (GameObject enemy in waveTwoEnemies) {
+            if (enemy) {
+                enemy.GetComponent<EnemyUnitController>().targetPosition = attackTowards;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+            }
+        }
+    }
+
+    private List<GameObject> waveThreeEnemies = new List<GameObject>();
+    private void prepareAttackWaveThree() {
+        Vector3 pos = new Vector3(-3f,30f,0f);
+
+        GameObject enemy1 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy2 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy3 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy4 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy5 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy6 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy7 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        waveThreeEnemies.Add(enemy1);
+        waveThreeEnemies.Add(enemy2);
+        waveThreeEnemies.Add(enemy3);
+        waveThreeEnemies.Add(enemy4);
+        waveThreeEnemies.Add(enemy5);
+        waveThreeEnemies.Add(enemy6);
+        waveThreeEnemies.Add(enemy7);
+
+        Vector3 moveToPos = new Vector3(-18f, 5f, 0f);
+
+        foreach (GameObject enemy in waveThreeEnemies) {
+            if (enemy) {
+                enemy.transform.parent = AIFolder;
+                enemy.GetComponent<EnemyUnitController>().targetPosition = moveToPos;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+            }
+        }
+    }
+
+    private void firstBuildUp() {
+        List<GameObject> temp = new List<GameObject>();
+
+        Vector3 pos = new Vector3(25f,-2f,0f);
+
+        GameObject enemy1 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy2 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy3 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy4 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy5 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy6 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy7 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        temp.Add(enemy1);
+        temp.Add(enemy2);
+        temp.Add(enemy3);
+        temp.Add(enemy4);
+        temp.Add(enemy5);
+        temp.Add(enemy6);
+        temp.Add(enemy7);
+
+        Vector3 moveToPos = new Vector3(-2.88f,-10.69f,0f);
+
+        foreach (GameObject enemy in temp) {
+            if (enemy) {
+                enemy.transform.parent = AIFolder;
+                enemy.GetComponent<EnemyUnitController>().targetPosition = moveToPos;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+                waveThreeEnemies.Add(enemy);
+            }
+        }
+    }
+
+    private void secondBuildUp() {
+        List<GameObject> temp = new List<GameObject>();
+
+        Vector3 pos = new Vector3(25f,-2f,0f);
+
+        GameObject enemy1 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy2 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy3 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy4 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy5 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy6 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy7 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        temp.Add(enemy1);
+        temp.Add(enemy2);
+        temp.Add(enemy3);
+        temp.Add(enemy4);
+        temp.Add(enemy5);
+        temp.Add(enemy6);
+        temp.Add(enemy7);
+
+        Vector3 moveToPos = new Vector3(-2.88f,-10.69f,0f);
+
+        foreach (GameObject enemy in temp) {
+            if (enemy) {
+                enemy.transform.parent = AIFolder;
+                enemy.GetComponent<EnemyUnitController>().targetPosition = moveToPos;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+                waveThreeEnemies.Add(enemy);
+            }
+        }
+    }
+
+    private void thirdBuildUp() {
+        List<GameObject> temp = new List<GameObject>();
+        Vector3 pos = new Vector3(-3f,30f,0f);
+
+        GameObject enemy1 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy2 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy3 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy4 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy5 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy6 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        GameObject enemy7 = Instantiate(EnemyPrefab, pos, Quaternion.identity);
+        temp.Add(enemy1);
+        temp.Add(enemy2);
+        temp.Add(enemy3);
+        temp.Add(enemy4);
+        temp.Add(enemy5);
+        temp.Add(enemy6);
+        temp.Add(enemy7);
+
+        Vector3 moveToPos = new Vector3(-18f, 5f, 0f);
+
+        foreach (GameObject enemy in temp) {
+            if (enemy) {
+                enemy.transform.parent = AIFolder;
+                enemy.GetComponent<EnemyUnitController>().targetPosition = moveToPos;
+                enemy.GetComponent<EnemyUnitController>().isSelected = true;
+                waveThreeEnemies.Add(enemy);
+            }
+        }
+    }
+
+    private void sendAttackWaveThree() {
+        foreach (GameObject enemy in waveThreeEnemies) {
             if (enemy) {
                 enemy.GetComponent<EnemyUnitController>().targetPosition = attackTowards;
                 enemy.GetComponent<EnemyUnitController>().isSelected = true;

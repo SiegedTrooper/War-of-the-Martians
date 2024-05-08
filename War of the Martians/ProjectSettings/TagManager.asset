@@ -48,3 +48,6 @@ TagManager:
   - name: Minerals
     uniqueID: 2097308755
     locked: 0
+  - name: UI
+    uniqueID: 3859790697
+    locked: 0
