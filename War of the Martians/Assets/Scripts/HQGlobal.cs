@@ -30,4 +30,13 @@ public class HQGlobal : MonoBehaviour
         }
         return nearestHQ;
     }
+
+    public GameObject GetRandomHQ() {
+        if (allHQs.Count == 0) {
+            return null;
+        } else if (allHQs.Count == 1) {
+            return allHQs[0];
+        }
+        return allHQs[Random.Range(0, allHQs.Count + 1)];
+    }
 }

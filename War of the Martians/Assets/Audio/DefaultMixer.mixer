@@ -6,7 +6,7 @@ AudioMixerGroupController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Dialogue
+  m_Name: Ambience
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: f89a6524883d5ad45b7df75914242f41
   m_Children: []
@@ -128,7 +128,11 @@ AudioMixerSnapshotController:
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 3129acdc208b62d4c91082183a1230a0
   m_FloatValues:
+    2fabbb63b66c33447b918104c3bed212: -4.7
+    291c5784421e36d4d916f35eea997497: 0.01
+    f5eede6591abb9542bfbcbc61f150998: -6.7
     1b473fb59593f144fa50c5c6adecbc7b: 0.44032478
+    50933c8bf9bd7d84a8567a180b2efe0f: 1
   m_TransitionOverrides: {}
 --- !u!244 &5207014070996233390
 AudioMixerEffectController:

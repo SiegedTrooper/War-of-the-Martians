@@ -30,7 +30,11 @@ public class AttackController : MonoBehaviour
             // do damage
             //Debug.Log("Attacking");
             //Debug.Log(targetToAttack.gameObject);
-            targetToAttack.gameObject.GetComponent<UnitController>().Damage(attackDamage);
+            if (targetToAttack.gameObject.GetComponent<UnitController>() != null) {
+                targetToAttack.gameObject.GetComponent<UnitController>().Damage(attackDamage);
+            } else {
+                targetToAttack.gameObject.GetComponent<EnemyUnitController>().Damage(attackDamage);
+            }
 
             // Attack Speed
             yield return new WaitForSeconds(attackSpeed);

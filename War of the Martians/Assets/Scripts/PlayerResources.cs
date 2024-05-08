@@ -9,8 +9,9 @@ public class PlayerResources : MonoBehaviour
     public static PlayerResources instance;
 
     // These have their own getters/setters
-    private int materialPoints;
-    private int oxygenPoints;
+    [SerializeField] public int StartingMaterialPoints = 0;
+    private int materialPoints = 0;
+    private int oxygenPoints = 0;
     
     private void Awake() {
         if (instance != null && instance != this) {
@@ -20,7 +21,14 @@ public class PlayerResources : MonoBehaviour
         }
     }
 
-
+    private void Start() {
+        IEnumerator Delay() { // Buildings will pull resources throwing the counter to negative. This is to offset that.
+            yield return new WaitForSeconds(1f);
+            materialPoints = 0;
+            AddResource(StartingMaterialPoints, ResourceType.Material);
+        }
+        StartCoroutine(Delay());
+    }
 
     // Getters and Setters
     public void AddResource(int points, ResourceType resource) {
@@ -43,8 +51,10 @@ public class PlayerResources : MonoBehaviour
     public void SubtractPoints(ResourceType t, int p) {
         if (t == ResourceType.Material) {
             materialPoints -= p;
+            CommandUIController.instance.UpdateCount(materialPoints, t);
         } else if (t == ResourceType.Oxygen) {
             oxygenPoints -= p;
+            CommandUIController.instance.UpdateCount(oxygenPoints, t);
         }
     }
 }

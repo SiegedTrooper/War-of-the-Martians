@@ -5,11 +5,11 @@ using UnityEngine;
 public class EnemyOffensiveUnitAttackState : StateMachineBehaviour
 {
     EnemyAttackController attackerController;
-    UnitController unitController;
+    EnemyUnitController unitController;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
         attackerController = animator.transform.GetComponent<EnemyAttackController>();
-        unitController = animator.transform.GetComponent<UnitController>();
+        unitController = animator.transform.GetComponent<EnemyUnitController>();
         //Debug.Log(unitController.gameObject.name + " has entered the attack state");
     }
 

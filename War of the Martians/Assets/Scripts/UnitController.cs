@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using GameResources;
 
 public class UnitController : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class UnitController : MonoBehaviour
     public Vector3 targetPosition;
     public bool isCommandedToMove;
 
-    public float health = 100f;
+    public float startingHealth = 100f;
+    private float health = 0f;
     // Attack information is stored in AttackController
 
     private Rigidbody2D rb;
@@ -30,6 +32,13 @@ public class UnitController : MonoBehaviour
 
         //InvokeRepeating("UpdatePath", 0f, .5f);
         //UpdatePath();
+
+        health = startingHealth;
+    }
+
+    // Optimization: Pooling
+    public void ResetUnit() {
+        health = startingHealth;
     }
 
     // Unit is damaged
@@ -39,7 +48,22 @@ public class UnitController : MonoBehaviour
         if (health <= 0) {
             // Death
             Debug.Log(gameObject.name + " has died");
-            Destroy(gameObject);
+
+            // Optimization: Pooling
+            //Destroy(gameObject);
+            if (gameObject.tag == "Player") {
+                if (gameObject.name == "Worker") {
+                    UnitsOptimizationPool.instance.AddWorkerUnit(Faction.Player, gameObject);
+                } else {
+                    UnitsOptimizationPool.instance.AddMeleeUnit(Faction.Player, gameObject);
+                }
+            } else {
+                if (gameObject.name == "Worker") {
+                    UnitsOptimizationPool.instance.AddWorkerUnit(Faction.Enemy, gameObject);
+                } else {
+                    UnitsOptimizationPool.instance.AddMeleeUnit(Faction.Enemy, gameObject);
+                }
+            }
         }
     }
 

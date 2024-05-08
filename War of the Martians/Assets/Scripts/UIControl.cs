@@ -13,71 +13,61 @@ public class UIControl : MonoBehaviour
     //[SerializeField] private GameObject robotPrefab;
     [SerializeField] private GameObject AIsFolder;
 
-    private string desc = "Welcome to the 'War of the Martians'. This is a prototype building featuring enemy variation, basic unit spawning, and resource collection.\n\nHold left mouse button and drag to select units, or directly click on units to select. Holding shift allows you to select more units without deselecting current units.\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    //private string desc = "Welcome to the 'War of the Martians'.\n\nHold left mouse button and drag to select units, or directly click on units to select. Holding shift allows you to select more units without deselecting current units.\n\nPress any key correlating to create a building. Left click to place, right click to cancel.\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n";
 
     // Update is called once per frame
     void Update()
     {
-        if (UnitSelectionManager.UnitSelector.allUnits.Count == 0 || !objective) {
-            if (!objective) {
-                TextMeshProUGUI t = gameObject.GetComponent<TextMeshProUGUI>();
-                t.text = "You Win";
-                t.color = Color.red;
-                t.fontSize = 106;
-                t.GetComponent<RectTransform>().anchorMin = new Vector2(.5f,.5f);
-                t.GetComponent<RectTransform>().anchorMax = new Vector2(.5f,.5f);
-                t.GetComponent<RectTransform>().pivot = new Vector2(0,0);
-            } else {
-                TextMeshProUGUI t = gameObject.GetComponent<TextMeshProUGUI>();
-                t.text = "Game Over";
-                t.color = Color.red;
-                t.fontSize = 106;
-                t.GetComponent<RectTransform>().anchorMin = new Vector2(.5f,.5f);
-                t.GetComponent<RectTransform>().anchorMax = new Vector2(.5f,.5f);
-                t.GetComponent<RectTransform>().pivot = new Vector2(0,0);
-            }
-        } else {
-            string l1 = "Spawning units cost resource points.\n";
-            string l2 = "Material: " + PlayerResources.instance.GetMaterialPoints() + "pts\n";
-            string l3 = "Oxygen: " + PlayerResources.instance.GetOxygenPoints() + "pts\n\n";
-            string l4 = "Push the respective keys to spawn units\n";
-            string l5 = "Worker - 5 Mats - Q\n";
-            string l6 = "Human - 10 Mats - E\n";
+        
+            //string l1 = "Spawning units cost resource points.\n";
+            //string l4 = "Push the respective keys to spawn units\n";
+            //string l5 = "Worker - 10 Mats - Q\n";
+            //string l6 = "Human - 5 Mats - E\n";
             //string l7 = "Robot - 10 Mats - T";
-            string combined = l1+l2+l3+l4+l5+l6;//+l7;
-            gameObject.GetComponent<TextMeshProUGUI>().text = desc + combined;
+            //string combined = l1+l4+l5+l6;//+l7;
+            //gameObject.GetComponent<TextMeshProUGUI>().text = desc + combined;
 
-            if (CheckConditions(KeyCode.Q,5,0)) {
+            if (CheckConditions(KeyCode.Q,10,0)) {
+                if (HQGlobal.instance.allHQs.Count == 0) {
+                    ChatNotifications.instance.Notify("You need to construct a HQ.","red");
+                    return;
+                }
+                PlayerResources.instance.SubtractPoints(ResourceType.Material, 10);
+                // Spawn worker // Optimization: Pooling
+                //SpawnPrefab(workerPrefab, new Vector2(-20f,6f));
+                GameObject unit = UnitsOptimizationPool.instance.GetWorkerUnit(Faction.Player);
+                unit.transform.parent = AIsFolder.transform;
+                // Spawn at HQ
+                unit.transform.position = HQGlobal.instance.GetRandomHQ().transform.position;
+            } else if (CheckConditions(KeyCode.E,5,0)) {
+                if (BarracksGlobal.instance.allBarracks.Count == 0) {
+                    ChatNotifications.instance.Notify("You need to construct a Barracks.","red");
+                    return;
+                }
                 PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
-                // Spawn worker
-                SpawnPrefab(workerPrefab, new Vector2(-20f,6f));
-            } else if (CheckConditions(KeyCode.E,10,0)) {
-                PlayerResources.instance.SubtractPoints(ResourceType.Material, 5);
-                // Spawn human
-                SpawnPrefab(humanPrefab, new Vector2(-15.5f,5f));
-            //} else if (CheckConditions(KeyCode.T,10,0)) {
-            //    PlayerResources.instance.SubtractPoints(ResourceType.Material, 10);
-            //    // Spawn Robot
-            //    SpawnPrefab(robotPrefab, new Vector2(-11f,5.5f));
-            }   
-        }
+                // Spawn human // Optimization: Pooling
+                //SpawnPrefab(humanPrefab, new Vector2(-15.5f,5f));
+                GameObject unit = UnitsOptimizationPool.instance.GetMeleeUnit(Faction.Player);
+                unit.transform.parent = AIsFolder.transform;
+                // Spawn at Barracks
+                unit.transform.position = BarracksGlobal.instance.GetRandomBarracks().transform.position;
+            } 
     }
 
     private bool CheckConditions(KeyCode key, int mat, int oxy) {
-        if (Input.GetKeyDown(key) && PlayerResources.instance.GetMaterialPoints() >= mat && PlayerResources.instance.GetOxygenPoints() >= oxy)
-            return true;
-        return false;
-    }
-
-    private void SpawnPrefab(GameObject prefab, Vector3 pos) {
-        GameObject a = Instantiate(prefab, pos, Quaternion.identity);
-        a.transform.eulerAngles = new Vector3(0f,0f,-33.33f);
-        a.transform.parent = AIsFolder.transform;
-    }   
+        bool pass = false;
+        if (Input.GetKeyDown(key)) {
+            pass = true; // Key is now down
+            if (PlayerResources.instance.GetMaterialPoints() < mat) {
+                pass = false;
+                ChatNotifications.instance.Notify("Not enough Materials","red");
+            }
+            if (PlayerResources.instance.GetOxygenPoints() < oxy) {
+                pass = false;
+                ChatNotifications.instance.Notify("Not enough Oxygen","red");
+            }
+        }
+        
+        return pass;
+    } 
 }
